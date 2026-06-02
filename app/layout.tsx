@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -39,9 +40,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`bg-background ${spaceGrotesk.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`bg-background ${spaceGrotesk.variable}`}>
       <body className="antialiased min-h-screen" style={{ fontFamily: 'var(--font-space-grotesk), Space Grotesk, sans-serif' }}>
         {children}
+        <Toaster />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

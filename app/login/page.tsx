@@ -16,7 +16,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    // Basic validation
     if (!email.trim()) {
       setError('Please enter your email.');
       return;
@@ -28,13 +27,27 @@ export default function LoginPage() {
 
     setLoading(true);
 
-    // Simulate auth — replace with your real auth call
-    await new Promise((res) => setTimeout(res, 800));
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
 
-    setLoading(false);
+      const data = await response.json();
+      setLoading(false);
 
-    // Navigate to dashboard on success
-    router.push('/dashboard');
+      if (!response.ok) {
+        setError(data.error || 'Login failed. Please check your credentials.');
+        return;
+      }
+
+      router.push('/dashboard');
+    } catch (err) {
+      setLoading(false);
+      setError('Unable to reach the server. Please try again later.');
+    }
   }
 
   return (

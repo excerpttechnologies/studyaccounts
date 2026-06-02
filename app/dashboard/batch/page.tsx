@@ -1,242 +1,170 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/components/auth/AuthProvider"
 import {
-  Users,
-  MessageSquare,
-  Trophy,
-  Calendar,
-  Crown,
-  TrendingUp,
-  Clock,
-  Star,
-  Mail,
+  Users, Trophy, Calendar, Crown,
+  TrendingUp, Clock, Star, Loader2, RefreshCw,
 } from "lucide-react"
 
-const batchInfo = {
-  name: "GST Masters Batch 2024",
-  institute: "CA Institute Mumbai",
-  trainer: "CA Priya Sharma",
-  startDate: "Jan 15, 2024",
-  endDate: "Apr 15, 2024",
-  totalStudents: 45,
-  avgScore: 84,
+interface BatchMember {
+  id: string
+  name: string
+  role: string
+  simulationsCompleted: number
+  avgScore: number
+  rank: number
 }
 
-const leaderboard = [
-  { rank: 1, name: "Aarav Patel", score: 95, simulations: 28, avatar: "AP" },
-  { rank: 2, name: "Priya Sharma", score: 93, simulations: 26, avatar: "PS" },
-  { rank: 3, name: "Rahul Kumar", score: 91, simulations: 25, avatar: "RK" },
-  { rank: 4, name: "John Doe", score: 88, simulations: 24, avatar: "JD", isYou: true },
-  { rank: 5, name: "Sneha Gupta", score: 86, simulations: 22, avatar: "SG" },
-  { rank: 6, name: "Amit Singh", score: 85, simulations: 21, avatar: "AS" },
-  { rank: 7, name: "Neha Verma", score: 83, simulations: 20, avatar: "NV" },
-  { rank: 8, name: "Vikram Joshi", score: 81, simulations: 19, avatar: "VJ" },
-]
-
-const upcomingEvents = [
-  { title: "Live GST Workshop", date: "Tomorrow, 3:00 PM", type: "workshop" },
-  { title: "Mock Test - GSTR-1", date: "Mar 25, 10:00 AM", type: "test" },
-  { title: "Doubt Clearing Session", date: "Mar 27, 4:00 PM", type: "session" },
-  { title: "Final Assessment", date: "Apr 10, 9:00 AM", type: "assessment" },
-]
-
-const batchmates = [
-  { name: "Aarav Patel", status: "online", lastActive: "Now" },
-  { name: "Priya Sharma", status: "online", lastActive: "Now" },
-  { name: "Rahul Kumar", status: "offline", lastActive: "2h ago" },
-  { name: "Sneha Gupta", status: "online", lastActive: "Now" },
-  { name: "Amit Singh", status: "offline", lastActive: "1d ago" },
-]
+interface BatchStats {
+  totalMembers: number
+  avgScore: number
+  totalSimulations: number
+}
 
 export default function BatchPage() {
+  const { user } = useAuth()
+  const [members, setMembers] = useState<BatchMember[]>([])
+  const [stats, setStats] = useState<BatchStats>({ totalMembers: 0, avgScore: 0, totalSimulations: 0 })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (user) load()
+  }, [user])
+
+  async function load() {
+    setLoading(true)
+    try {
+      const res = await fetch("/api/batch/leaderboard", { cache: "no-store" })
+      if (res.ok) {
+        const data = await res.json()
+        setMembers(data.members || [])
+        setStats(data.stats || { totalMembers: 0, avgScore: 0, totalSimulations: 0 })
+      }
+    } catch {
+      // silently fail - show empty state
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const myRank = members.find((m) => m.id === user?.id)?.rank ?? null
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">My Batch</h1>
-          <p className="text-sm text-muted-foreground">Connect with your batchmates and track progress</p>
+          <p className="text-sm text-muted-foreground">Your cohort leaderboard and batch activity</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
-          <MessageSquare className="mr-2 h-4 w-4" />
-          Open Batch Chat
+        <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          Refresh
         </Button>
       </div>
 
-      {/* Batch Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border border-border bg-gradient-to-br from-primary/10 via-card to-accent/10 p-6"
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-foreground">{batchInfo.name}</h2>
-            <p className="text-sm text-muted-foreground">{batchInfo.institute}</p>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Trainer:</span>
-              <span className="text-foreground font-medium">{batchInfo.trainer}</span>
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: "Batch Members",  value: stats.totalMembers,  icon: Users,      color: "text-primary",  bg: "bg-primary/10" },
+          { label: "Avg Batch Score",value: stats.avgScore ? `${stats.avgScore}%` : "—", icon: TrendingUp, color: "text-accent",   bg: "bg-accent/10" },
+          { label: "Your Rank",      value: myRank ? `#${myRank}` : "—",           icon: Trophy,     color: "text-chart-4", bg: "bg-chart-4/10" },
+          { label: "Total Sims Done",value: stats.totalSimulations, icon: Clock,   color: "text-chart-5", bg: "bg-chart-5/10" },
+        ].map((s, i) => (
+          <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg ${s.bg} flex items-center justify-center`}>
+                <s.icon className={`h-5 w-5 ${s.color}`} />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-foreground">
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : s.value}
+                </div>
+                <div className="text-xs text-muted-foreground">{s.label}</div>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">{batchInfo.totalStudents}</div>
-              <div className="text-xs text-muted-foreground">Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">{batchInfo.avgScore}%</div>
-              <div className="text-xs text-muted-foreground">Avg Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">4</div>
-              <div className="text-xs text-muted-foreground">Your Rank</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">21</div>
-              <div className="text-xs text-muted-foreground">Days Left</div>
-            </div>
-          </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Leaderboard */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+        className="rounded-xl border border-border bg-card p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Crown className="h-5 w-5 text-chart-4" />
+          <h2 className="text-lg font-semibold text-foreground">Leaderboard</h2>
         </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : members.length === 0 ? (
+          <div className="text-center py-12">
+            <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
+            <p className="font-medium text-foreground">No batch data yet</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Complete simulations to appear on the leaderboard.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {members.map((member) => {
+              const isMe = member.id === user?.id
+              const initials = member.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+              return (
+                <div key={member.id}
+                  className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${
+                    isMe ? "bg-primary/5 border border-primary/20" : "hover:bg-muted"
+                  }`}>
+                  {/* Rank */}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-sm ${
+                    member.rank === 1 ? "bg-chart-4 text-white" :
+                    member.rank === 2 ? "bg-slate-400 text-white" :
+                    member.rank === 3 ? "bg-amber-600 text-white" :
+                    "bg-muted text-muted-foreground"
+                  }`}>
+                    {member.rank <= 3 ? <Trophy className="h-4 w-4" /> : member.rank}
+                  </div>
+                  {/* Avatar */}
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-sm font-semibold ${
+                    isMe ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                  }`}>
+                    {initials}
+                  </div>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-foreground text-sm truncate">{member.name}</p>
+                      {isMe && <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">You</span>}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{member.simulationsCompleted} simulations completed</p>
+                  </div>
+                  {/* Score */}
+                  <div className="text-right shrink-0">
+                    <div className="flex items-center gap-1 justify-end">
+                      <Star className="h-3.5 w-3.5 text-chart-4" />
+                      <span className="font-semibold text-foreground text-sm">{member.avgScore}%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">avg score</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Leaderboard */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-          className="lg:col-span-2 rounded-xl border border-border bg-card p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-chart-4/10 flex items-center justify-center">
-                <Trophy className="h-5 w-5 text-chart-4" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-foreground">Leaderboard</h2>
-                <p className="text-sm text-muted-foreground">Top performers this month</p>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-3">
-            {leaderboard.map((student) => (
-              <div
-                key={student.rank}
-                className={`flex items-center gap-4 p-3 rounded-lg ${
-                  student.isYou ? "bg-primary/10 border border-primary/20" : "hover:bg-muted"
-                } transition-colors`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  student.rank === 1 ? "bg-chart-4 text-chart-4-foreground" :
-                  student.rank === 2 ? "bg-muted-foreground/30 text-foreground" :
-                  student.rank === 3 ? "bg-chart-4/30 text-chart-4" :
-                  "bg-muted text-muted-foreground"
-                }`}>
-                  {student.rank <= 3 ? <Crown className="h-4 w-4" /> : student.rank}
-                </div>
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-primary">{student.avatar}</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground">{student.name}</span>
-                    {student.isYou && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">You</span>
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground">{student.simulations} simulations</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-foreground">{student.score}%</div>
-                  <div className="text-xs text-muted-foreground">avg score</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          {/* Upcoming Events */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-            className="rounded-xl border border-border bg-card p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-foreground">Upcoming</h2>
-                <p className="text-xs text-muted-foreground">Batch events</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {upcomingEvents.map((event, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    event.type === "workshop" ? "bg-primary" :
-                    event.type === "test" ? "bg-chart-4" :
-                    event.type === "session" ? "bg-accent" : "bg-destructive"
-                  }`} />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-foreground">{event.title}</div>
-                    <div className="text-xs text-muted-foreground">{event.date}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Batchmates Online */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
-            className="rounded-xl border border-border bg-card p-6"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-accent" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-foreground">Batchmates</h2>
-                <p className="text-xs text-muted-foreground">3 online now</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {batchmates.map((mate, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        {mate.name.split(" ").map(n => n[0]).join("")}
-                      </span>
-                    </div>
-                    <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-card ${
-                      mate.status === "online" ? "bg-accent" : "bg-muted-foreground"
-                    }`} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-foreground">{mate.name}</div>
-                    <div className="text-xs text-muted-foreground">{mate.lastActive}</div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Mail className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            <Button variant="outline" className="w-full mt-4">
-              View All Batchmates
-            </Button>
-          </motion.div>
-        </div>
-      </div>
+      {/* Upcoming placeholder */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+        className="rounded-xl border border-dashed border-border bg-card p-6 text-center">
+        <Calendar className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+        <p className="font-medium text-foreground text-sm">Upcoming Events</p>
+        <p className="text-xs text-muted-foreground mt-1">Events and live sessions will appear here when scheduled.</p>
+      </motion.div>
     </div>
   )
 }

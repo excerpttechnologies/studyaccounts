@@ -35,6 +35,7 @@ function SignupForm() {
 
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading,    setIsLoading]    = useState(false)
+  const [error,        setError]       = useState("")
   const [step,         setStep]         = useState(1)
   const [formData,     setFormData]     = useState({
     userType:      "student",
@@ -46,11 +47,48 @@ function SignupForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (step === 1) { setStep(2); return }
+    setError("")
+
+    if (step === 1) {
+      setStep(2)
+      return
+    }
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.password) {
+      setError("Please fill all required fields.")
+      return
+    }
+
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsLoading(false)
-    router.push("/dashboard")
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+          userType: formData.userType,
+        }),
+      })
+
+      const data = await response.json()
+      setIsLoading(false)
+
+      if (!response.ok) {
+        setError(data.error || "Unable to create account.")
+        return
+      }
+
+      router.push("/dashboard")
+    } catch (err) {
+      setIsLoading(false)
+      setError("Unable to reach the server. Please try again later.")
+    }
   }
 
   return (
@@ -90,6 +128,12 @@ function SignupForm() {
         <div className={`flex-1 h-1 rounded-full ${step >= 1 ? "bg-primary" : "bg-border"}`} />
         <div className={`flex-1 h-1 rounded-full ${step >= 2 ? "bg-primary" : "bg-border"}`} />
       </div>
+
+      {error ? (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          {error}
+        </div>
+      ) : null}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {step === 1 ? (
