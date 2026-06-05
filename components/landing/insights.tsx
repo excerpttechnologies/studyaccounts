@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { Clock, ArrowRight, TrendingUp, BookOpen, Lightbulb } from 'lucide-react';
@@ -35,7 +35,7 @@ const ARTICLES = [
     category: 'Cash Flow',
     categoryColor: '#FFE878',
     title: 'Cash Flow Forecasting for Startups: A Practical Guide',
-    excerpt: 'Learn how to build a 13-week rolling cash flow model and use SmartAccounts to automate the process.',
+    excerpt: 'Learn how to build a 13-week rolling cash flow model and use Accountin to automate the process.',
     readTime: '10 min read',
     date: 'Mar 30, 2025',
     featured: false,
@@ -43,7 +43,7 @@ const ARTICLES = [
   {
     category: 'Product',
     categoryColor: '#FF9F78',
-    title: 'Introducing Real-Time Collaboration in SmartAccounts',
+    title: 'Introducing Real-Time Collaboration in Accountin',
     excerpt: 'Your entire finance team can now work on the same ledger simultaneously — with live cursors, comments, and version history.',
     readTime: '3 min read',
     date: 'Mar 18, 2025',

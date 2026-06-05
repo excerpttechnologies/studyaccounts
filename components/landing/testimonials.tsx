@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Star } from 'lucide-react';
 
@@ -12,7 +12,7 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    quote: 'SmartAccounts transformed how we manage our accounting. What used to take 2 days now takes 2 hours. The ROI was immediate.',
+    quote: 'Accountin transformed how we manage our accounting. What used to take 2 days now takes 2 hours. The ROI was immediate.',
     author: 'Sarah Johnson',
     role: 'Finance Director',
     company: 'TechStart Inc',
@@ -44,7 +44,7 @@ export function Testimonials() {
             Loved by thousands of businesses
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            See what our customers say about SmartAccounts
+            See what our customers say about Accountin
           </p>
         </div>
 

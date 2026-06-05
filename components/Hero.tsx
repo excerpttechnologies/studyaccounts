@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -31,7 +31,7 @@ export default function Hero() {
           className="font-extrabold text-[#0A0A0A] text-center leading-none select-none"
           style={{ fontSize: "clamp(80px,14vw,180px)", transform: `scale(var(--hero-scale))`, opacity: `var(--hero-opacity)` }}
         >
-          SmartAccounts.
+          Accountin.
         </h1>
       </div>
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -65,12 +65,12 @@ export default function LoginPage() {
           href="/"
           className="block text-center text-lg font-black tracking-tight text-white mb-6 hover:text-[#CCFF00] transition-colors"
         >
-          SmartAccounts.
+          Accountin.
         </Link>
 
         <h1 className="text-2xl font-bold text-white mb-1 text-center">Welcome back</h1>
         <p className="text-sm mb-7 text-center" style={{ color: '#888888' }}>
-          Sign in to your SmartAccounts account
+          Sign in to your Accountin account
         </p>
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">

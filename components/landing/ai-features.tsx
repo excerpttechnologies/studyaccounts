@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 import { Sparkles, MessageSquare, Target, TrendingUp, Lightbulb, Zap } from "lucide-react"
@@ -93,7 +93,7 @@ export function AIFeatures() {
                   <Sparkles className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-foreground">SmartAccounts AI</div>
+                  <div className="text-sm font-medium text-foreground">Accountin AI</div>
                   <div className="text-xs text-muted-foreground">Always online</div>
                 </div>
               </div>

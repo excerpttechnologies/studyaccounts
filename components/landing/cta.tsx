@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -50,7 +50,7 @@ export function CTA() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mt-6 text-lg text-primary-foreground/80 max-w-2xl mx-auto text-pretty"
             >
-              Join 500+ institutes already using SmartAccounts to train the next generation of tax professionals. 
+              Join 500+ institutes already using Accountin to train the next generation of tax professionals. 
               No credit card required.
             </motion.p>
 

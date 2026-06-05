@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -60,7 +60,7 @@ export function FAQ() {
             Frequently asked questions
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Everything you need to know about SmartAccounts.
+            Everything you need to know about Accountin.
           </p>
         </motion.div>
 

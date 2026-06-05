@@ -28,19 +28,22 @@ export async function getSimulationBySlug(slug: string) {
 export async function getPublishedSimulations() {
   await connectMongoose()
   const now = new Date()
-  return SimulationModel.find({
-    published: true,
+  
+  // Query simulations with status "published" (the published boolean field is auto-set)
+  const simulations = await SimulationModel.find({
     status: "published",
     $and: [
       {
         $or: [
           { "schedule.startDate": { $exists: false } },
+          { "schedule.startDate": null },
           { "schedule.startDate": { $lte: now } },
         ],
       },
       {
         $or: [
           { "schedule.endDate": { $exists: false } },
+          { "schedule.endDate": null },
           { "schedule.endDate": { $gte: now } },
         ],
       },
@@ -48,6 +51,9 @@ export async function getPublishedSimulations() {
   })
     .sort({ sortOrder: 1, createdAt: -1 })
     .lean() as Promise<Simulation[]>
+
+  console.log(`Found ${simulations.length} published simulations for students`)
+  return simulations
 }
 
 export async function createSimulation(
@@ -61,6 +67,7 @@ export async function createSimulation(
 
     const simulation = await SimulationModel.create({
       ...input,
+      published: input.status === "published", // explicitly set so it's correct before the hook runs
       sortOrder: Date.now(),
     })
 
@@ -69,7 +76,6 @@ export async function createSimulation(
   } catch (error) {
     console.error("========== CREATE SIMULATION ERROR ==========")
     console.error(error)
-
     throw error
   }
 }
@@ -99,11 +105,16 @@ export async function updateSimulation(
   updates: Partial<Omit<Simulation, "id" | "createdAt" | "updatedAt" | "views" | "published" | "sortOrder">>,
 ) {
   await connectMongoose()
-  const simulation = await SimulationModel.findOneAndUpdate({ id }, updates, {
+  // Explicitly sync the published boolean whenever status changes
+  const fullUpdates: any = { ...updates }
+  if (updates.status !== undefined) {
+    fullUpdates.published = updates.status === "published"
+  }
+  const simulation = await SimulationModel.findOneAndUpdate({ id }, fullUpdates, {
     new: true,
     runValidators: true,
   })
-  return simulation?.lean() as Promise<Simulation | null>
+  return simulation?.toObject() as Simulation | null
 }
 
 export async function deleteSimulation(id: string) {
@@ -228,7 +239,7 @@ export async function saveSimulationProgress(options: {
         attemptId: attemptDoc.id,
         userId: options.userId,
         score: options.score,
-        qrCodeUrl: `https://studyaccounts.example.com/verify/${verificationCode}`,
+        qrCodeUrl: `https://accountin.com/verify/${verificationCode}`,
         verificationCode,
       })
       attemptDoc.certificateIssued = true

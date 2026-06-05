@@ -479,3 +479,177 @@ export function scoreSimulation(category: string, questions: any, answers: any, 
   if (!fn) return { score: 0, maxScore: 100, percentage: 0, breakdown: [] }
   return fn(questions, answers, scenario)
 }
+
+
+// Enhanced GST Registration Scoring
+export function scoreGSTRegistration(scenario: Record<string, any>, answers: Record<string, any>) {
+  const breakdown: Array<Record<string, any>> = []
+  let score = 0
+
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+  const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/
+  const pincodeRegex = /^[1-9][0-9]{5}$/
+  const mobileRegex = /^[6-9][0-9]{9}$/
+
+  const checks = [
+    { label: "Business Type Selected", correct: !!answers.businessType, marks: 10 },
+    { label: "PAN Format Valid", correct: panRegex.test(answers.pan || ""), marks: 15 },
+    { label: "PAN Matches Scenario", correct: answers.pan === scenario.pan, marks: 10 },
+    { label: "State Selected", correct: !!answers.state, marks: 10 },
+    { label: "State Code Correct", correct: answers.stateCode === scenario.stateCode, marks: 10 },
+    { label: "Address Provided", correct: (answers.address || "").length >= 10, marks: 5 },
+    { label: "Pincode Format Valid", correct: pincodeRegex.test(answers.pincode || ""), marks: 10 },
+    { label: "Mobile Format Valid", correct: mobileRegex.test((answers.mobile || "").replace(/\D/g, "")), marks: 10 },
+    { label: "Email Format Valid", correct: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email || ""), marks: 10 },
+    { label: "GSTIN Generated Correctly", correct: answers.gstin === scenario.expectedGSTIN, marks: 10 },
+  ]
+
+  checks.forEach((c) => {
+    if (c.correct) score += c.marks
+    breakdown.push({ ...c })
+  })
+
+  return { score, maxScore: 100, percentage: score, breakdown }
+}
+
+// Enhanced TDS Deduction Scoring
+export function scoreTDSDeduction(scenario: Record<string, any>, answers: Record<string, any>) {
+  const breakdown: Array<Record<string, any>> = []
+  let score = 0
+
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+  const expectedTDS = Math.round((scenario.grossAmount * scenario.tdsRate) / 100)
+  const expectedNetPayable = scenario.grossAmount - expectedTDS
+
+  const checks = [
+    { label: "PAN Format Valid", correct: panRegex.test(answers.pan || ""), marks: 10 },
+    { label: "TDS Section Correct", correct: answers.section === scenario.section, marks: 20 },
+    { label: "TDS Rate Correct", correct: Number(answers.tdsRate) === scenario.tdsRate, marks: 15 },
+    { label: "TDS Amount Calculated", correct: Math.abs(Number(answers.tdsAmount) - expectedTDS) <= 10, marks: 20 },
+    { label: "Net Payable Correct", correct: Math.abs(Number(answers.netPayable) - expectedNetPayable) <= 10, marks: 20 },
+    { label: "Threshold Check", correct: scenario.grossAmount >= scenario.threshold, marks: 10 },
+    { label: "Payment Date Provided", correct: !!answers.paymentDate, marks: 5 },
+  ]
+
+  checks.forEach((c) => {
+    if (c.correct) score += c.marks
+    breakdown.push({ ...c })
+  })
+
+  return { score, maxScore: 100, percentage: score, breakdown, computed: { expectedTDS, expectedNetPayable } }
+}
+
+// Enhanced TDS Challan Scoring
+export function scoreTDSChallan(scenario: Record<string, any>, answers: Record<string, any>) {
+  const breakdown: Array<Record<string, any>> = []
+  let score = 0
+
+  const tanRegex = /^[A-Z]{4}[0-9]{5}[A-Z]{1}$/
+  const expectedTotalTDS = scenario.totalTDS
+  const expectedSurcharge = scenario.surcharge
+  const expectedCess = scenario.cess
+  const expectedTotalAmount = scenario.totalAmount
+
+  const checks = [
+    { label: "TAN Format Valid", correct: tanRegex.test(answers.tan || ""), marks: 10 },
+    { label: "TAN Matches Scenario", correct: answers.tan === scenario.tan, marks: 10 },
+    { label: "Assessment Year Correct", correct: answers.assessmentYear === scenario.assessmentYear, marks: 10 },
+    { label: "Total TDS Correct", correct: Math.abs(Number(answers.totalTDS) - expectedTotalTDS) <= 10, marks: 20 },
+    { label: "Surcharge Correct", correct: Math.abs(Number(answers.surcharge) - expectedSurcharge) <= 5, marks: 15 },
+    { label: "Cess Correct", correct: Math.abs(Number(answers.cess) - expectedCess) <= 5, marks: 15 },
+    { label: "Total Amount Correct", correct: Math.abs(Number(answers.totalAmount) - expectedTotalAmount) <= 20, marks: 20 },
+  ]
+
+  checks.forEach((c) => {
+    if (c.correct) score += c.marks
+    breakdown.push({ ...c })
+  })
+
+  return { score, maxScore: 100, percentage: score, breakdown }
+}
+
+// Enhanced TDS Return Scoring
+export function scoreTDSReturn(scenario: Record<string, any>, answers: Record<string, any>) {
+  const breakdown: Array<Record<string, any>> = []
+  let score = 0
+
+  const tanRegex = /^[A-Z]{4}[0-9]{5}[A-Z]{1}$/
+  const expectedTotalAmount = scenario.totalAmount
+  const expectedTotalTDS = scenario.totalTDS
+
+  const checks = [
+    { label: "Return Type Correct", correct: answers.returnType === scenario.returnType, marks: 10 },
+    { label: "TAN Format Valid", correct: tanRegex.test(answers.tan || ""), marks: 10 },
+    { label: "Quarter Correct", correct: answers.quarter === scenario.quarter, marks: 10 },
+    { label: "Deductees Count Correct", correct: Number(answers.totalDeductees) === scenario.totalDeductees, marks: 15 },
+    { label: "Total Amount Correct", correct: Math.abs(Number(answers.totalAmount) - expectedTotalAmount) <= 100, marks: 25 },
+    { label: "Total TDS Correct", correct: Math.abs(Number(answers.totalTDS) - expectedTotalTDS) <= 50, marks: 25 },
+    { label: "Filing Date Acknowledged", correct: !!answers.filingDate, marks: 5 },
+  ]
+
+  checks.forEach((c) => {
+    if (c.correct) score += c.marks
+    breakdown.push({ ...c })
+  })
+
+  return { score, maxScore: 100, percentage: score, breakdown }
+}
+
+// GST Reconciliation Scoring
+export function scoreGSTReconciliation(scenario: Record<string, any>, answers: Record<string, any>) {
+  const breakdown: Array<Record<string, any>> = []
+  let score = 0
+
+  const expectedBooksSales = scenario.booksSales || 0
+  const expectedGSTR1Sales = scenario.gstr1Sales || 0
+  const expectedMismatch = Math.abs(expectedBooksSales - expectedGSTR1Sales)
+
+  const checks = [
+    { label: "Books Sales Identified", correct: Math.abs(Number(answers.booksSales) - expectedBooksSales) <= 100, marks: 25 },
+    { label: "GSTR-1 Sales Identified", correct: Math.abs(Number(answers.gstr1Sales) - expectedGSTR1Sales) <= 100, marks: 25 },
+    { label: "Mismatch Calculated", correct: Math.abs(Number(answers.mismatch) - expectedMismatch) <= 100, marks: 25 },
+    { label: "Reconciliation Notes", correct: (answers.notes || "").length >= 20, marks: 15 },
+    { label: "Action Plan Provided", correct: (answers.actionPlan || "").length >= 20, marks: 10 },
+  ]
+
+  checks.forEach((c) => {
+    if (c.correct) score += c.marks
+    breakdown.push({ ...c })
+  })
+
+  return { score, maxScore: 100, percentage: score, breakdown }
+}
+
+// GST Audit Scoring
+export function scoreGSTAudit(scenario: Record<string, any>, answers: Record<string, any>) {
+  const breakdown: Array<Record<string, any>> = []
+  let score = 0
+
+  const auditPoints = scenario.auditPoints || []
+  const studentFindings = answers.findings || []
+
+  auditPoints.forEach((point: any, i: number) => {
+    const studentAnswer = studentFindings[i] || {}
+    const identifiedCorrect = !!studentAnswer.identified
+    const remarksProvided = (studentAnswer.remarks || "").length >= 10
+    const marks = (identifiedCorrect ? 7 : 0) + (remarksProvided ? 3 : 0)
+    score += marks
+    breakdown.push({
+      point: point.description,
+      identified: identifiedCorrect,
+      remarksProvided,
+      marks,
+      maxMarks: 10,
+    })
+  })
+
+  return { score, maxScore: auditPoints.length * 10 || 100, percentage: Math.round((score / (auditPoints.length * 10 || 100)) * 100), breakdown }
+}
+
+// Update SCORING_FUNCTIONS registry
+SCORING_FUNCTIONS["GST_REGISTRATION"] = scoreGSTRegistration
+SCORING_FUNCTIONS["TDS_DEDUCTION"] = scoreTDSDeduction
+SCORING_FUNCTIONS["TDS_CHALLAN"] = scoreTDSChallan
+SCORING_FUNCTIONS["TDS_RETURN"] = scoreTDSReturn
+SCORING_FUNCTIONS["GST_RECONCILIATION"] = scoreGSTReconciliation
+SCORING_FUNCTIONS["GST_AUDIT"] = scoreGSTAudit

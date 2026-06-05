@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { Suspense, useState } from "react"
 import Link from "next/link"
@@ -112,7 +112,7 @@ function SignupForm() {
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
           <GraduationCap className="h-6 w-6 text-primary-foreground" />
         </div>
-        <span className="text-2xl font-bold text-foreground">SmartAccounts</span>
+        <span className="text-2xl font-bold text-foreground">Accountin</span>
       </Link>
 
       {/* Header */}
@@ -295,7 +295,7 @@ export default function SignupPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h2 className="text-3xl font-bold mb-6">Start your journey with SmartAccounts</h2>
+            <h2 className="text-3xl font-bold mb-6">Start your journey with Accountin</h2>
             <p className="text-lg text-primary-foreground/80 mb-8">
               Join thousands of students and institutes already transforming their tax training experience.
             </p>

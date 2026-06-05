@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -44,7 +44,7 @@ export function Navbar() {
             href="/"
             className="text-[1.15rem] font-black tracking-tight text-[#0A0A0A] shrink-0 select-none"
           >
-            SmartAccounts.
+            Accountin.
           </Link>
 
           {/* Center — pill nav (desktop) */}

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { Target, Heart, Lightbulb, Award } from 'lucide-react';
@@ -20,7 +20,7 @@ const VALUES = [
 ];
 
 const MILESTONES = [
-  { year: '2020', event: 'SmartAccounts founded in Bengaluru with a mission to simplify Indian accounting.' },
+  { year: '2020', event: 'Accountin founded in Bengaluru with a mission to simplify Indian accounting.' },
   { year: '2021', event: 'Launched GST auto-filing. Reached 10,000 users in 6 months.' },
   { year: '2022', event: 'Raised Series A. Expanded to TDS, payroll, and multi-currency support.' },
   { year: '2023', event: 'Introduced AI-powered anomaly detection and cash-flow forecasting.' },
@@ -75,12 +75,12 @@ export function About() {
               <span style={{ color: '#CCFF00' }}>financial backbone.</span>
             </h2>
             <p className="text-base leading-relaxed mb-5" style={{ color: '#888' }}>
-              SmartAccounts was born out of frustration. Our founders spent years watching
+              Accountin was born out of frustration. Our founders spent years watching
               small businesses drown in spreadsheets, miss GST deadlines, and pay penalties
               for avoidable errors. We decided to fix that.
             </p>
             <p className="text-base leading-relaxed" style={{ color: '#888' }}>
-              Today, SmartAccounts is India's fastest-growing accounting platform — trusted
+              Today, Accountin is India's fastest-growing accounting platform — trusted
               by freelancers, startups, and enterprises alike. We combine the power of AI
               with deep compliance knowledge to make accounting effortless.
             </p>

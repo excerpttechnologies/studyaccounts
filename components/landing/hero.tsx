@@ -93,8 +93,8 @@ export function Hero() {
             transition: 'opacity 0.65s ease 0.1s, transform 0.65s ease 0.1s',
           }}
         >
-          Smart
-          <span style={{ color: '#0A0A0A' }}>Accounts</span>
+          Account
+          <span style={{ color: '#0A0A0A' }}>in</span>
           <span style={{ color: '#CCFF00' }}>.</span>
         </h1>
 

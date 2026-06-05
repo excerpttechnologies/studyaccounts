@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { Check, LayoutGrid, Table2, MessageCircle, Phone, Star } from 'lucide-react';
@@ -109,7 +109,7 @@ const FEATURES = [
 ];
 
 const TESTIMONIALS = [
-  { name: 'CA Priya Sharma',    org: 'Sharma & Associates',       text: 'SmartAccounts cut our GST training time by 60%. The simulation portal is incredibly realistic.' },
+  { name: 'CA Priya Sharma',    org: 'Sharma & Associates',       text: 'Accountin cut our GST training time by 60%. The simulation portal is incredibly realistic.' },
   { name: 'Rajesh Mehta',       org: 'Mehta Tax Consultants',     text: 'The UAE VAT module helped us onboard 3 new clients in the Gulf. Excellent platform.' },
   { name: 'Dr. Anita Verma',    org: 'National Commerce College', text: 'We white-labelled the portal for our institute. Students love the hands-on experience.' },
 ];

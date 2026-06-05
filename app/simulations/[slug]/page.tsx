@@ -1,193 +1,335 @@
-"use client"
+﻿"use client"
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import { ArrowLeft, Clock, Play, Sparkles } from "lucide-react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/use-toast"
-import type { Simulation, SimulationAttempt } from "@/lib/types"
-// FALLBACK removed - all simulations come from MongoDB
-import SimulationPlayer from "@/components/simulations/SimulationPlayer"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  GraduationCap, Eye, EyeOff, Mail, Lock,
+  User, Building2, ArrowLeft, CheckCircle2,
+} from "lucide-react"
 
-export default function SimulationDetailPage() {
-  const params = useParams()
-  const [simulation, setSimulation] = useState<Simulation | null>(null)
-  const [related, setRelated] = useState<Simulation[]>([])
-  const [loading, setLoading] = useState(true)
-  const [relatedLoading, setRelatedLoading] = useState(false)
-  const [attempt, setAttempt] = useState<SimulationAttempt | null>(null)
-  const [started, setStarted] = useState(false)
-  const [scoreResult, setScoreResult] = useState<any>(null)
+/* ── static data ──────────────────────────────────────────────────── */
+const userTypes = [
+  { id: "student",   label: "Student",        description: "Learning GST/TDS filing"   },
+  { id: "trainer",   label: "Trainer",         description: "Teaching at an institute"  },
+  { id: "institute", label: "Institute Admin", description: "Managing an institute"     },
+]
 
-  useEffect(() => {
-    async function loadSimulation() {
-      if (!params?.slug) return
-      setLoading(true)
+const BENEFITS = [
+  "14-day free trial with full access",
+  "No credit card required to start",
+  "Realistic GST & TDS simulations",
+  "AI-powered learning assistance",
+  "Detailed progress analytics",
+]
 
-      const [simulationResponse, progressResponse] = await Promise.allSettled([
-        fetch(`/api/simulations/${params.slug}`),
-        fetch(`/api/user/simulations/${params.slug}/progress`, { cache: "no-store" }),
-      ])
+/* ── inner component — uses useSearchParams ───────────────────────── */
+function SignupForm() {
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const plan         = searchParams.get("plan") || "starter"
 
-      let simulationData: any = null
-      if (simulationResponse.status === "fulfilled") {
-        const response = simulationResponse.value
-        simulationData = await response.json()
-        if (!response.ok) {
-          toast({ title: "Simulation not found", description: simulationData.error || "This content is unavailable." })
-        }
-      }
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading,    setIsLoading]    = useState(false)
+  const [error,        setError]       = useState("")
+  const [step,         setStep]         = useState(1)
+  const [formData,     setFormData]     = useState({
+    userType:      "student",
+    name:          "",
+    email:         "",
+    password:      "",
+    instituteName: "",
+  })
 
-      if (progressResponse.status === "fulfilled") {
-        const progress = await progressResponse.value.json()
-        if (progressResponse.value.ok && progress.attempt) {
-          setAttempt(progress.attempt)
-        }
-      }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError("")
 
-      if (!simulationData || !simulationData.simulation) {
-        setLoading(false)
+    if (step === 1) {
+      setStep(2)
+      return
+    }
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.password) {
+      setError("Please fill all required fields.")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+          userType: formData.userType,
+        }),
+      })
+
+      const data = await response.json()
+      setIsLoading(false)
+
+      if (!response.ok) {
+        setError(data.error || "Unable to create account.")
         return
       }
 
-      setSimulation(simulationData.simulation)
-      setLoading(false)
-      loadRelated(simulationData.simulation.category, simulationData.simulation.id)
+      router.push("/dashboard")
+    } catch (err) {
+      setIsLoading(false)
+      setError("Unable to reach the server. Please try again later.")
     }
-
-    async function loadRelated(category: string, currentId: string) {
-      setRelatedLoading(true)
-      const response = await fetch(`/api/simulations/public?category=${encodeURIComponent(category)}`)
-      const data = await response.json()
-      if (response.ok) {
-        setRelated(data.simulations.filter((item: Simulation) => item.id !== currentId).slice(0, 3))
-      }
-      setRelatedLoading(false)
-    }
-
-    loadSimulation()
-  }, [params?.slug])
-
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="rounded-3xl border border-neutral-200 bg-white p-10 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-          Loading simulation details...
-        </div>
-      </div>
-    )
-  }
-
-  if (!simulation) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-sm text-center">
-          <p className="text-lg font-semibold">Simulation not found</p>
-          <p className="mt-2 text-sm text-slate-500">This simulation is unavailable or has been removed.</p>
-          <div className="mt-4">
-            <Link href="/simulations">
-              <Button variant="outline" size="sm">Back to library</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
-    <div className="space-y-8">
-      <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-primary">Simulation</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-950 dark:text-white">{simulation.title}</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{simulation.description}</p>
-          </div>
-          <Link href="/simulations">
-            <Button variant="outline" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" /> Back to library
-            </Button>
-          </Link>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-md"
+    >
+      {/* Back */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to home
+      </Link>
+
+      {/* Logo */}
+      <Link href="/" className="flex items-center gap-2 mb-8">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+          <GraduationCap className="h-6 w-6 text-primary-foreground" />
         </div>
+        <span className="text-2xl font-bold text-foreground">Accountin</span>
+      </Link>
+
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
+        <p className="mt-2 text-muted-foreground">
+          {step === 1 ? "Choose your account type to get started" : "Complete your profile"}
+        </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-          <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-black dark:border-neutral-800">
-            {simulation.videoUrl ? (
-              <video
-                src={simulation.videoUrl}
-                controls
-                poster={simulation.thumbnailUrl || undefined}
-                className="h-full w-full max-h-[420px] object-cover"
-              />
-            ) : simulation.thumbnailUrl ? (
-              // show thumbnail image when video is not available
-              // use img instead of background to avoid empty src warnings
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={simulation.thumbnailUrl}
-                alt={simulation.title}
-                className="h-full w-full max-h-[420px] object-cover"
-              />
-            ) : (
-              <div className="h-[420px] flex items-center justify-center text-sm text-slate-200">No video available</div>
-            )}
-          </div>
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-3xl border border-neutral-200 bg-slate-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Difficulty</p>
-              <p className="mt-2 font-semibold text-slate-950 dark:text-white">{simulation.difficulty}</p>
-            </div>
-            <div className="rounded-3xl border border-neutral-200 bg-slate-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Duration</p>
-              <p className="mt-2 font-semibold text-slate-950 dark:text-white">{simulation.duration}</p>
-            </div>
-            <div className="rounded-3xl border border-neutral-200 bg-slate-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Views</p>
-              <p className="mt-2 font-semibold text-slate-950 dark:text-white">{simulation.views}</p>
-            </div>
-          </div>
+      {/* Progress bar */}
+      <div className="flex items-center gap-2 mb-8">
+        <div className={`flex-1 h-1 rounded-full ${step >= 1 ? "bg-primary" : "bg-border"}`} />
+        <div className={`flex-1 h-1 rounded-full ${step >= 2 ? "bg-primary" : "bg-border"}`} />
+      </div>
 
-          <div className="mt-8 rounded-3xl border border-neutral-200 bg-slate-50 p-6 dark:border-neutral-800 dark:bg-neutral-900">
-            <h2 className="text-lg font-semibold text-slate-950 dark:text-white">Simulation instructions</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{simulation.instructions}</p>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button className="gap-2">
-              <Play className="h-4 w-4" /> Start simulation
-            </Button>
-            <span className="rounded-2xl border border-neutral-200 bg-white px-4 py-2 text-sm text-slate-600 dark:border-neutral-800 dark:bg-neutral-950 dark:text-slate-300">
-              {simulation.tags.join(" · ")}
-            </span>
-          </div>
+      {error ? (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          {error}
         </div>
+      ) : null}
 
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-            <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-              <Sparkles className="h-5 w-5 text-primary" />
-              Related simulations
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {step === 1 ? (
+          <>
+            {/* User type selection */}
+            <div className="space-y-3">
+              {userTypes.map((type) => (
+                <button
+                  key={type.id}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, userType: type.id })}
+                  className={`w-full p-4 rounded-xl border text-left transition-all ${
+                    formData.userType === type.id
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                      : "border-border hover:border-primary/30"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      formData.userType === type.id ? "bg-primary" : "bg-muted"
+                    }`}>
+                      {type.id === "student"   && <User        className={`h-5 w-5 ${formData.userType === type.id ? "text-primary-foreground" : "text-muted-foreground"}`} />}
+                      {type.id === "trainer"   && <GraduationCap className={`h-5 w-5 ${formData.userType === type.id ? "text-primary-foreground" : "text-muted-foreground"}`} />}
+                      {type.id === "institute" && <Building2    className={`h-5 w-5 ${formData.userType === type.id ? "text-primary-foreground" : "text-muted-foreground"}`} />}
+                    </div>
+                    <div>
+                      <div className="font-medium text-foreground">{type.label}</div>
+                      <div className="text-sm text-muted-foreground">{type.description}</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
-            {relatedLoading ? (
-              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Loading related content...</p>
-            ) : related.length === 0 ? (
-              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">No similar published simulations yet.</p>
-            ) : (
-              <div className="mt-4 space-y-4">
-                {related.map((item) => (
-                  <Link key={item.id} href={`/simulations/${item.slug}`} className="block rounded-3xl border border-neutral-200 bg-slate-50 p-4 transition hover:border-primary/40 dark:border-neutral-800 dark:bg-neutral-900">
-                    <p className="font-semibold text-slate-950 dark:text-white">{item.title}</p>
-                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{item.description}</p>
-                  </Link>
-                ))}
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+              Continue
+            </Button>
+          </>
+        ) : (
+          <>
+            {/* Full name */}
+            <div className="space-y-2">
+              <Label htmlFor="name">Full name</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name" type="text" placeholder="John Doe" className="pl-10"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Institute name (conditional) */}
+            {formData.userType === "institute" && (
+              <div className="space-y-2">
+                <Label htmlFor="instituteName">Institute name</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="instituteName" type="text" placeholder="Your Institute Name" className="pl-10"
+                    value={formData.instituteName}
+                    onChange={(e) => setFormData({ ...formData, instituteName: e.target.value })}
+                    required
+                  />
+                </div>
               </div>
             )}
-          </div>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email" type="email" placeholder="you@example.com" className="pl-10"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a strong password"
+                  className="pl-10 pr-10"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
+            </div>
+
+            {/* Selected plan badge */}
+            {plan && (
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <div className="text-sm text-muted-foreground">Selected plan</div>
+                <div className="font-medium text-foreground capitalize">{plan}</div>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
+                Back
+              </Button>
+              <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90" disabled={isLoading}>
+                {isLoading ? "Creating account…" : "Create account"}
+              </Button>
+            </div>
+          </>
+        )}
+      </form>
+
+      {/* Terms */}
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        By creating an account, you agree to our{" "}
+        <Link href="/terms"   className="text-primary hover:underline">Terms of Service</Link>
+        {" "}and{" "}
+        <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+      </p>
+
+      {/* Sign in link */}
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link href="/login" className="text-primary font-medium hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </motion.div>
+  )
+}
+
+/* ── default export — Suspense boundary wraps the form ───────────── */
+export default function SignupPage() {
+  return (
+    <div className="min-h-screen flex">
+
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-primary via-primary to-primary/80 p-8">
+        <div className="max-w-lg text-primary-foreground">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h2 className="text-3xl font-bold mb-6">Start your journey with Accountin</h2>
+            <p className="text-lg text-primary-foreground/80 mb-8">
+              Join thousands of students and institutes already transforming their tax training experience.
+            </p>
+            <div className="space-y-4">
+              {BENEFITS.map((benefit, index) => (
+                <motion.div
+                  key={benefit}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+                  className="flex items-center gap-3"
+                >
+                  <CheckCircle2 className="h-5 w-5 text-primary-foreground shrink-0" />
+                  <span>{benefit}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* Right form panel — Suspense required for useSearchParams */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <Suspense
+          fallback={
+            <div className="w-full max-w-md flex items-center justify-center py-20">
+              <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
+          }
+        >
+          <SignupForm />
+        </Suspense>
+      </div>
+
     </div>
   )
 }

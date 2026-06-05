@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -62,7 +62,7 @@ const SERVICES = [
 /* ── Process steps ──────────────────────────────────────────────────── */
 const STEPS = [
   { num: '01', title: 'Connect your accounts', desc: 'Link your bank, GST portal, and payment gateways in under 2 minutes.' },
-  { num: '02', title: 'Auto-import transactions', desc: 'SmartAccounts pulls and categorises every transaction automatically.' },
+  { num: '02', title: 'Auto-import transactions', desc: 'Accountin pulls and categorises every transaction automatically.' },
   { num: '03', title: 'Review & approve', desc: 'AI flags anomalies. You review, approve, and move on.' },
   { num: '04', title: 'File & report', desc: 'Generate compliant reports and file returns with one click.' },
 ];
@@ -131,7 +131,7 @@ export function Features() {
               transition: 'opacity 0.6s ease 0.15s',
             }}
           >
-            From GST filing to AI-powered forecasting — SmartAccounts covers every corner
+            From GST filing to AI-powered forecasting — Accountin covers every corner
             of your financial workflow so you can focus on growing your business.
           </p>
         </div>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { Mail, Phone, MapPin, MessageSquare, Clock, CheckCircle } from 'lucide-react';
@@ -7,9 +7,9 @@ const CONTACT_METHODS = [
   {
     icon: Mail,
     title: 'Email us',
-    detail: 'hello@smartaccounts.com',
+    detail: 'hello@Accountin.com',
     sub: 'We reply within 4 hours',
-    href: 'mailto:hello@smartaccounts.com',
+    href: 'mailto:hello@Accountin.com',
   },
   {
     icon: Phone,
@@ -36,10 +36,10 @@ const CONTACT_METHODS = [
 
 const FAQS = [
   { q: 'Is there a free trial?', a: 'Yes — the Free plan is free forever. Pro and Enterprise plans come with a 14-day free trial, no credit card required.' },
-  { q: 'Can I import data from Tally or Zoho?', a: 'Absolutely. SmartAccounts supports one-click import from Tally, Zoho Books, QuickBooks, and Excel/CSV files.' },
+  { q: 'Can I import data from Tally or Zoho?', a: 'Absolutely. Accountin supports one-click import from Tally, Zoho Books, QuickBooks, and Excel/CSV files.' },
   { q: 'Is my data secure?', a: 'Your data is encrypted with AES-256 at rest and in transit. We are SOC 2 Type II certified and GDPR compliant.' },
   { q: 'Do you support multi-company accounts?', a: 'Yes. Pro and Enterprise plans support multiple companies under a single login with separate ledgers and permissions.' },
-  { q: 'How does GST auto-filing work?', a: 'SmartAccounts connects to the GSTN portal via API. It auto-computes your liability, generates GSTR-1/3B, and files on your behalf after your approval.' },
+  { q: 'How does GST auto-filing work?', a: 'Accountin connects to the GSTN portal via API. It auto-computes your liability, generates GSTR-1/3B, and files on your behalf after your approval.' },
 ];
 
 function useInView(threshold = 0.15) {

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { ArrowRight } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export function FooterCTA() {
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-          Join 2,000+ teams that are streamlining their accounting with SmartAccounts. Start your free trial today.
+          Join 2,000+ teams that are streamlining their accounting with Accountin. Start your free trial today.
         </p>
 
         {/* CTA Button */}

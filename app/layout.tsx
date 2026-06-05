@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
@@ -11,7 +11,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'SmartAccounts - AI-Powered Tax Simulation & Training Platform',
+  title: 'Accountin - AI-Powered Tax Simulation & Training Platform',
   description: 'India\'s leading EdTech platform for GST, TDS & accounting training. Real-world tax simulations, AI-powered learning, and certification programs for institutes and professionals.',
   keywords: ['GST training', 'TDS training', 'accounting education', 'tax simulation', 'CA coaching', 'EdTech India'],
   generator: 'v0.app',

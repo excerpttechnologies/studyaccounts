@@ -1,4 +1,4 @@
-// "use client"
+﻿// "use client"
 
 // import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 // import { Loader2, Trash2, Upload } from "lucide-react"
@@ -62,7 +62,7 @@
 //       const formData = new FormData()
 //       formData.append("file", file)
 //       formData.append("upload_preset", uploadPreset)
-//       formData.append("folder", "smartaccounts/simulations")
+//       formData.append("folder", "Accountin/simulations")
 
 //       const xhr = new XMLHttpRequest()
 //       xhr.open("POST", endpoint)
@@ -228,13 +228,25 @@ export function VideoUploader({ label, mode, value, onChange }: VideoUploaderPro
     formData.append("type", mode);
     
     try {
+      console.log("Starting upload for:", file.name, "Size:", file.size);
+      
+      // Try the API route first
       const response = await fetch("/api/admin/upload/video", {
         method: "POST",
         body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
       });
       
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          throw new Error(`Upload failed with status ${response.status}`);
+        }
         throw new Error(errorData.error || "Upload failed");
       }
       
@@ -248,6 +260,14 @@ export function VideoUploader({ label, mode, value, onChange }: VideoUploaderPro
       const errorMessage = err instanceof Error ? err.message : "Upload failed";
       setError(errorMessage);
       console.error("Upload error:", err);
+      
+      // Show more detailed error in UI
+      if (errorMessage.includes("FormData")) {
+        setError("Upload configuration error. Please restart the development server.");
+      } else {
+        setError(errorMessage);
+      }
+      
       onChange(null);
     } finally {
       setUploading(false);

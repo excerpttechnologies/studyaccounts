@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -45,7 +45,7 @@ export default function Navbar() {
               }`}
               aria-hidden={!showWordmark}
             >
-              <span className="font-black text-xl tracking-tight text-[#0A0A0A]">SmartAccounts.</span>
+              <span className="font-black text-xl tracking-tight text-[#0A0A0A]">Accountin.</span>
             </div>
           </div>
 

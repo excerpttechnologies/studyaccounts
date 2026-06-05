@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -96,7 +96,7 @@ function Shell({ children, isAdminRoute }: { children: React.ReactNode; isAdminR
             <GraduationCap className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <span className="text-base font-bold text-foreground leading-none block">SmartAccounts</span>
+            <span className="text-base font-bold text-foreground leading-none block">Accountin</span>
             {isAdminRoute && (
               <span className="flex items-center gap-1 text-[10px] font-medium text-primary mt-0.5">
                 <ShieldCheck className="h-3 w-3" /> Admin Panel

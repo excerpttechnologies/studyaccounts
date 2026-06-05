@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { Twitter, Linkedin, Github, Mail } from 'lucide-react';
 
 const footerLinks = {
@@ -24,7 +24,7 @@ const socialLinks = [
   { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
   { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
   { icon: Github, href: 'https://github.com', label: 'GitHub' },
-  { icon: Mail, href: 'mailto:hello@smartaccounts.com', label: 'Email' },
+  { icon: Mail, href: 'mailto:hello@Accountin.com', label: 'Email' },
 ];
 
 export function Footer() {
@@ -36,7 +36,7 @@ export function Footer() {
           {/* Brand Column */}
           <div>
             <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white">
-              SmartAccounts
+              Accountin
             </Link>
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
               Modern accounting for modern businesses. Automate, analyze, and grow.
@@ -99,7 +99,7 @@ export function Footer() {
           {/* Bottom Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              &copy; {new Date().getFullYear()} SmartAccounts. All rights reserved.
+              &copy; {new Date().getFullYear()} Accountin. All rights reserved.
             </p>
             <div className="flex gap-6">
               {footerLinks.legal.map((link) => (
