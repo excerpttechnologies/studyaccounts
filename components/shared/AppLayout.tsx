@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -21,6 +21,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  Trophy,
 } from "lucide-react"
 
 const baseItems = [
@@ -28,6 +29,7 @@ const baseItems = [
   { icon: BookOpen,        label: "Courses",          href: "/dashboard/courses" },
   { icon: BarChart3,       label: "Analytics",        href: "/dashboard/analytics" },
   { icon: FileText,        label: "Simulations",      href: "/dashboard/simulations" },
+  { icon: Trophy,          label: "Tax Practice Lab", href: "/dashboard/tax-lab" },
   { icon: Calculator,      label: "TDS Simulations",  href: "/dashboard/tds" },
   { icon: Receipt,         label: "GST Simulations",  href: "/dashboard/gst" },
   { icon: Users,           label: "My Batch",         href: "/dashboard/batch" },
@@ -38,6 +40,7 @@ const studentItems = [
   { icon: LayoutDashboard, label: "Dashboard",        href: "/dashboard" },
   { icon: BookOpen,        label: "Courses",          href: "/dashboard/courses" },
   { icon: FileText,        label: "Simulations",      href: "/dashboard/simulations" },
+  { icon: Trophy,          label: "Tax Practice Lab", href: "/dashboard/tax-lab" },
   { icon: Calculator,      label: "TDS Simulations",  href: "/dashboard/tds" },
   { icon: Receipt,         label: "GST Simulations",  href: "/dashboard/gst" },
   { icon: Users,           label: "My Batch",         href: "/dashboard/batch" },
@@ -47,6 +50,7 @@ const studentItems = [
 const adminItems = [
   { icon: BookOpen,  label: "Manage Courses",     href: "/admin/courses" },
   { icon: FileText,  label: "Manage Simulations", href: "/admin/simulations" },
+  { icon: ShieldCheck, label: "Manage Tax Lab",   href: "/admin/tax-simulations" },
 ]
 
 function NavLink({

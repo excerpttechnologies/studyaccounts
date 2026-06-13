@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getUserFromRequest } from "@/lib/auth-server"
 import { connectMongoose } from "@/lib/mongoose"
 import TaxLeaderboard from "@/lib/models/TaxLeaderboard"
-import { getDB } from "@/lib/mongodb"
+import { getDb } from "@/lib/mongodb"
 
 // GET /api/tax-simulations/leaderboard?type=GST|TDS|OVERALL&limit=50
 export async function GET(req: NextRequest) {
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     await connectMongoose()
 
     // Get user info
-    const db = await getDB()
+    const db = await getDb()
     const usersCollection = db.collection("users")
     const userData = await usersCollection.findOne({ id: user.sub })
     const userName = userData?.name || "Unknown User"

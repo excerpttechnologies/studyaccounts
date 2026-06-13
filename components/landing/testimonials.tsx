@@ -1,85 +1,85 @@
 ﻿'use client';
 
+import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
+import { GlassCard } from './ui/glass-card';
+import { RevealOnScroll } from './ui/reveal-on-scroll';
 
-interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-  initials: string;
-}
-
-const testimonials: Testimonial[] = [
+const TESTIMONIALS = [
   {
-    quote: 'Accountin transformed how we manage our accounting. What used to take 2 days now takes 2 hours. The ROI was immediate.',
-    author: 'Sarah Johnson',
-    role: 'Finance Director',
-    company: 'TechStart Inc',
-    initials: 'SJ',
+    name: 'Dr. Rajesh Kumar',
+    role: 'Director',
+    institution: 'Delhi Commerce Academy',
+    quote: 'AccountIn transformed how we teach GST and TDS. Our students now enter interviews with real portal experience — something no textbook can provide.',
+    rating: 5,
+    initial: 'RK',
   },
   {
-    quote: 'The automation features are incredible. Our team loves the smart categorization and how easy it is to generate reports for audits.',
-    author: 'Michael Chen',
-    role: 'CFO',
-    company: 'Global Ventures',
-    initials: 'MC',
+    name: 'Priya Sharma',
+    role: 'Institution Owner',
+    institution: 'Mumbai Tax Institute',
+    quote: 'The white-label option let us brand the platform as our own. Student engagement increased by 60% and placement rates have never been higher.',
+    rating: 5,
+    initial: 'PS',
   },
   {
-    quote: 'Best accounting software we\'ve used. The customer support is exceptional, and the mobile app keeps me informed wherever I am.',
-    author: 'Emma Rodriguez',
-    role: 'Business Owner',
-    company: 'Sunset Creative Co',
-    initials: 'ER',
+    name: 'Prof. Anand Mehta',
+    role: 'Faculty Head',
+    institution: 'Bangalore CA Coaching',
+    quote: 'Trainer resources and dedicated support make AccountIn incredibly easy to adopt. We onboarded 300 students in the first month alone.',
+    rating: 5,
+    initial: 'AM',
+  },
+  {
+    name: 'Sneha Reddy',
+    role: 'Senior Trainer',
+    institution: 'Hyderabad FinEd Center',
+    quote: 'The simulation quality is unmatched. Students practice GSTR filing, TDS returns, and payroll — all in one integrated platform.',
+    rating: 5,
+    initial: 'SR',
   },
 ];
 
 export function Testimonials() {
   return (
-    <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Loved by thousands of businesses
+    <section className="py-24 landing-section">
+      <div className="max-w-7xl mx-auto px-5 lg:px-8">
+        <RevealOnScroll className="text-center max-w-3xl mx-auto mb-16">
+          <span className="inline-block text-xs font-bold tracking-widest uppercase mb-4 px-3 py-1 rounded-full bg-[var(--bg-glass)] border border-[var(--glass-border)] text-[var(--accent-cyan)]">
+            Testimonials
+          </span>
+          <h2 className="font-heading text-[clamp(2rem,4vw,3.5rem)] font-bold text-white">
+            Trusted by Education Leaders
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            See what our customers say about Accountin
-          </p>
-        </div>
+        </RevealOnScroll>
 
-        {/* Testimonials Grid - 3 columns responsive */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.author}
-              className="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 hover:border-gray-300 dark:hover:border-gray-700 transition-colors"
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {TESTIMONIALS.map((t, i) => (
+            <motion.div
+              key={t.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ delay: i * 0.12, duration: 0.6 }}
             >
-              {/* 5-Star Rating */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-
-              {/* Quote */}
-              <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed italic">
-                &ldquo;{testimonial.quote}&rdquo;
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-800 flex items-center justify-center">
-                  <span className="text-sm font-bold text-gray-700 dark:text-gray-400">{testimonial.initials}</span>
+              <GlassCard hover className="p-7 h-full flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-11 h-11 rounded-full bg-[var(--accent-gradient)] flex items-center justify-center text-sm font-bold text-[#05060B]">
+                    {t.initial}
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm">{t.name}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t.role} · {t.institution}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">{testimonial.author}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {testimonial.role} at {testimonial.company}
-                  </p>
+                <div className="flex items-center gap-1 mb-4">
+                  {Array.from({ length: t.rating }).map((_, si) => (
+                    <Star key={si} size={14} className="text-amber-400 fill-amber-400" />
+                  ))}
                 </div>
-              </div>
-            </div>
+                <p className="text-sm text-[var(--text-muted)] leading-relaxed flex-1">&ldquo;{t.quote}&rdquo;</p>
+              </GlassCard>
+            </motion.div>
           ))}
         </div>
       </div>

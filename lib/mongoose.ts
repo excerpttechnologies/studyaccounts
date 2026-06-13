@@ -1,4 +1,13 @@
 import mongoose from "mongoose"
+import dns from "dns"
+
+// Override DNS servers in Node.js to bypass local SRV resolution failures
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+} catch (e) {
+  console.warn("Failed to set DNS servers:", e);
+}
+
 
 const dbName = process.env.MONGODB_DB || "saa_accounting_platform"
 

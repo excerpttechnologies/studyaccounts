@@ -1,19 +1,28 @@
 ﻿import type { Metadata } from 'next'
-import { Space_Grotesk } from 'next/font/google'
+import { Inter, Poppins } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
+import { SmoothScroll } from '@/components/landing/smooth-scroll'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-space-grotesk',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-poppins',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'Accountin - AI-Powered Tax Simulation & Training Platform',
-  description: 'India\'s leading EdTech platform for GST, TDS & accounting training. Real-world tax simulations, AI-powered learning, and certification programs for institutes and professionals.',
-  keywords: ['GST training', 'TDS training', 'accounting education', 'tax simulation', 'CA coaching', 'EdTech India'],
+  title: 'AccountIn — Advanced Tax Simulation & Accounting Practice Platform',
+  description: 'Become job-ready through real-time tax & accounting simulations. Master GST, TDS, Income Tax, EPFO, Payroll, UAE VAT and accounting processes for training institutes, colleges, and universities.',
+  keywords: ['GST simulation', 'TDS training', 'tax simulation platform', 'accounting education', 'institution training', 'white label EdTech', 'CA coaching', 'UAE VAT training'],
   generator: 'v0.app',
   icons: {
     icon: [
@@ -40,9 +49,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`bg-background ${spaceGrotesk.variable}`}>
-      <body className="antialiased min-h-screen" style={{ fontFamily: 'var(--font-space-grotesk), Space Grotesk, sans-serif' }}>
-        {children}
+    <html lang="en" data-scroll-behavior="smooth" className={`bg-background ${inter.variable} ${poppins.variable}`}>
+      <body className="antialiased min-h-screen font-sans">
+        <SmoothScroll>{children}</SmoothScroll>
         <Toaster />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

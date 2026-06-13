@@ -11,7 +11,7 @@ export async function getUserFromRequest(request: Request): Promise<User | null>
     const user = await db.collection<User>("users").findOne({ id: payload.sub })
     if (!user) return null
     const { _id, ...userWithoutId } = user as any
-    return userWithoutId as User
+    return { ...userWithoutId, sub: user.id } as User
   } catch {
     return null
   }

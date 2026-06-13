@@ -1,23 +1,19 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import { NavLoginLink, OutlinedButton } from './ui/buttons';
 
 const NAV_LINKS = [
-  { label: 'Services', href: '#services' },
-  { label: 'Pricing',  href: '#pricing'  },
-  { label: 'About',    href: '#about'    },
-  { label: 'Insights', href: '#insights' },
-  { label: 'Contact',  href: '#contact'  },
-];
-
-const TICKER_ITEMS = [
-  'AI Tools',
-  'Real-time Collaboration',
-  'Built-in Graphics',
-  'Export All Formats',
-  'Smart Automation',
-  'GST & TDS Ready',
+  { label: 'Home', href: '#hero' },
+  { label: 'Solutions', href: '#solutions' },
+  { label: 'Simulations', href: '#simulations' },
+  { label: 'Institutions', href: '#institutions' },
+  { label: 'Partner Program', href: '#partner' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'Contact', href: '#contact' },
 ];
 
 export function Navbar() {
@@ -25,122 +21,88 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  return (
-    <>
-      {/* ── Main nav bar ─────────────────────────────────────────── */}
-      <nav
-        className="sticky top-0 z-50 w-full bg-white transition-shadow duration-300"
-        style={{ boxShadow: scrolled ? '0 1px 0 rgba(0,0,0,0.08)' : 'none' }}
-      >
-        <div className="max-w-7xl mx-auto px-5 lg:px-10 h-[68px] flex items-center justify-between gap-4">
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
-          {/* Left — logo (always visible) */}
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 landing-section">
+      <nav
+        className={`transition-all duration-300 ${
+          scrolled
+            ? 'bg-[var(--bg-base)]/80 backdrop-blur-xl border-b border-[var(--glass-border)]'
+            : 'bg-transparent'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between gap-4">
           <Link
             href="/"
-            className="text-[1.15rem] font-black tracking-tight text-[#0A0A0A] shrink-0 select-none"
+            className="text-xl font-bold tracking-tight text-[var(--text-primary)] shrink-0 font-heading"
           >
-            Accountin.
+            ACCOUNTIN
           </Link>
 
-          {/* Center — pill nav (desktop) */}
-          <div className="hidden md:flex items-center bg-[#F2F2F2] rounded-full px-5 py-[7px] gap-5">
+          <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="text-[13px] font-medium text-gray-600 hover:text-black transition-colors whitespace-nowrap"
+                className="px-3 py-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors rounded-lg relative group"
               >
                 {link.label}
+                <span className="absolute bottom-1 left-3 right-3 h-px bg-[var(--accent-gradient)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
               </a>
             ))}
           </div>
 
-          {/* Right — auth */}
           <div className="flex items-center gap-3 shrink-0">
-            <Link
-              href="/login"
-              className="hidden sm:block text-[13px] font-medium text-gray-600 hover:text-black transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-[13px] font-semibold bg-[#0A0A0A] text-white rounded-lg px-4 py-2 hover:bg-neutral-800 active:scale-95 transition-all whitespace-nowrap"
-            >
-              Get Started →
-            </Link>
-
-            {/* Mobile hamburger */}
+            <NavLoginLink className="hidden sm:block" />
+            <OutlinedButton href="#contact" className="hidden sm:inline-flex text-xs px-4 py-2">
+              Book Demo
+            </OutlinedButton>
             <button
-              className="md:hidden flex flex-col gap-[5px] p-1"
+              className="lg:hidden p-2 rounded-lg text-[var(--text-muted)] hover:bg-[var(--accent-blue)]/10 hover:text-[var(--accent-cyan)]"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Toggle menu"
             >
-              <span
-                className="block w-5 h-[2px] bg-black transition-all duration-300"
-                style={{ transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }}
-              />
-              <span
-                className="block w-5 h-[2px] bg-black transition-all duration-300"
-                style={{ opacity: menuOpen ? 0 : 1 }}
-              />
-              <span
-                className="block w-5 h-[2px] bg-black transition-all duration-300"
-                style={{ transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }}
-              />
+              {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
-
-        {/* Mobile dropdown */}
-        {menuOpen && (
-          <div className="md:hidden border-t border-gray-100 bg-white px-5 py-4 flex flex-col gap-3">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-sm font-medium text-gray-700 hover:text-black py-1"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="flex gap-3 pt-2 border-t border-gray-100">
-              <Link href="/login" className="text-sm font-medium text-gray-600">Login</Link>
-              <Link href="#pricing" className="text-sm font-semibold bg-black text-white rounded-lg px-4 py-1.5">
-                Get Started →
-              </Link>
-            </div>
-          </div>
-        )}
       </nav>
 
-      {/* ── Marquee ticker strip ──────────────────────────────────── */}
-      <div
-        className="w-full overflow-hidden border-b border-gray-100"
-        style={{ background: '#FAFAFA', height: '36px' }}
-      >
-        <div className="ticker-track flex items-center h-full gap-10 whitespace-nowrap">
-          {/* Duplicate for seamless loop */}
-          {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <span
-              key={i}
-              className="text-[11px] font-medium tracking-wide text-gray-400 shrink-0 flex items-center gap-2"
-            >
-              <span
-                className="inline-block w-1 h-1 rounded-full"
-                style={{ background: '#CCFF00' }}
-              />
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-    </>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="lg:hidden fixed inset-0 top-[72px] bg-[var(--bg-base)]/95 backdrop-blur-xl z-40 overflow-y-auto border-t border-[var(--glass-border)]"
+          >
+            <div className="px-5 py-6 flex flex-col gap-1">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-base font-medium text-[var(--text-muted)] hover:text-[var(--accent-cyan)] py-3 border-b border-[var(--glass-border)]"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <OutlinedButton href="#contact" className="mt-4 w-full">
+                Book Demo
+              </OutlinedButton>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 }

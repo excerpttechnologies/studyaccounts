@@ -4,10 +4,15 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/AuthProvider"
-import {
-  Users, Trophy, Calendar, Crown,
-  TrendingUp, Clock, Star, Loader2, RefreshCw,
-} from "lucide-react"
+import { Users } from "lucide-react"
+import { Trophy } from "lucide-react"
+import { Calendar } from "lucide-react"
+import { Crown } from "lucide-react"
+import { TrendingUp } from "lucide-react"
+import { Clock } from "lucide-react"
+import { Star } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 
 interface BatchMember {
   id: string

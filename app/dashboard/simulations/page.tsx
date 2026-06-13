@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play, Sparkles, Trophy, Clock } from "lucide-react"
+import { ArrowRight, Play, Sparkles, Clock } from "lucide-react"
+import { Trophy } from "lucide-react"
 // fallback removed - using empty state instead
 
 type SimulationOverview = {

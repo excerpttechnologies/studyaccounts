@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth/AuthProvider"
 import {
   Play, Clock, CheckCircle2, Star, Filter, Search, FileText,
-  ArrowRight, Lock, TrendingUp, Loader2, RefreshCw, Trophy,
+  ArrowRight, Lock, TrendingUp, Loader2, RefreshCw,
 } from "lucide-react"
+import { Trophy } from "lucide-react"
 
 interface GSTSimulation {
   id: string; slug: string; title: string; description: string

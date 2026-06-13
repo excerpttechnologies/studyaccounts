@@ -1,111 +1,100 @@
-﻿"use client"
+﻿'use client';
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown } from "lucide-react"
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+import { GlassCard } from './ui/glass-card';
+import { RevealOnScroll } from './ui/reveal-on-scroll';
 
-const faqs = [
+const FAQS = [
   {
-    question: "How realistic are the GST/TDS simulations?",
-    answer: "Our simulations are designed to mirror the actual government portals as closely as possible. We continuously update our interfaces to match any changes in the official portals, ensuring students get hands-on experience that directly translates to real-world filing.",
+    q: 'What is AccountIn?',
+    a: 'AccountIn is India\'s most advanced tax simulation and accounting practice platform designed for training institutes, colleges, and coaching centers. It provides realistic simulations of GST, TDS, Income Tax, EPFO, Payroll, UAE VAT, and accounting workflows.',
   },
   {
-    question: "Can I customize the platform with my institute's branding?",
-    answer: "Yes! Professional and Enterprise plans support custom branding including your logo, color scheme, and custom domain. Enterprise customers can opt for a fully white-labeled solution.",
+    q: 'Who can use AccountIn?',
+    a: 'AccountIn is built exclusively for educational institutions — training institutes, colleges, universities, coaching centers, skill development organizations, and professional training companies. It follows a strict B2B institution-only model.',
   },
   {
-    question: "What happens to student data after the subscription ends?",
-    answer: "We provide a 30-day grace period after subscription ends. During this time, you can export all student data, progress reports, and certificates. After 30 days, data is archived for 90 days before permanent deletion.",
+    q: 'Do you train students directly?',
+    a: 'No. AccountIn empowers institutions to train their own students. We provide the platform, simulations, trainer resources, and support — your faculty delivers the training.',
   },
   {
-    question: "Is the AI tutor available 24/7?",
-    answer: "Yes, the AI tutor is available round the clock. It can answer questions about GST, TDS, and accounting concepts, provide hints during simulations, and explain errors. For complex queries, it can escalate to human support during business hours.",
+    q: 'Can institutions white-label the platform?',
+    a: 'Yes. Our OEM / White Label Partner program offers custom branding, your own logo, own domain, and a fully personalized platform experience for your institution.',
   },
   {
-    question: "How do you handle updates when GST laws change?",
-    answer: "Our content team monitors all GST/TDS circulars and notifications. Updates are typically rolled out within 48-72 hours of official announcements. Enterprise customers can also request priority updates for specific compliance requirements.",
+    q: 'How often is the platform updated?',
+    a: 'AccountIn is updated regularly to reflect the latest regulatory changes, compliance requirements, and government portal updates across all simulation modules.',
   },
   {
-    question: "Can students access the platform on mobile devices?",
-    answer: "Yes, our platform is fully responsive and works on tablets and smartphones. However, for the best simulation experience (especially for complex forms), we recommend using a desktop or laptop computer.",
+    q: 'Is trainer support included?',
+    a: 'Absolutely. All partnership plans include trainer resources, onboarding assistance, and dedicated support via WhatsApp, email, and phone.',
   },
   {
-    question: "Do you offer bulk discounts for large institutes?",
-    answer: "Absolutely! We offer volume-based discounts for institutes with more than 500 students. Contact our sales team for a custom quote tailored to your needs.",
+    q: 'Can multiple branches be managed?',
+    a: 'Yes. AccountIn supports multi-branch management with centralized administration, separate trainer accounts, and consolidated reporting across all locations.',
   },
   {
-    question: "What payment methods do you accept?",
-    answer: "We accept all major credit/debit cards, net banking, UPI, and bank transfers. For Enterprise plans, we also offer invoice-based payment with NET 30 terms.",
+    q: 'Do you provide onboarding assistance?',
+    a: 'Every partner receives full onboarding support including platform setup, trainer training, student enrollment guidance, and ongoing technical assistance.',
   },
-]
+];
 
-export function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
+export function Faq() {
+  const [open, setOpen] = useState<number>(0);
 
   return (
-    <section id="faq" className="py-24 bg-muted/30">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+    <section id="faq" className="py-24 landing-section">
+      <div className="max-w-3xl mx-auto px-5 lg:px-8">
+        <RevealOnScroll className="text-center mb-12">
+          <span className="inline-block text-xs font-bold tracking-widest uppercase mb-4 px-3 py-1 rounded-full bg-[var(--bg-glass)] border border-[var(--glass-border)] text-[var(--accent-violet)]">
             FAQ
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-            Frequently asked questions
+          </span>
+          <h2 className="font-heading text-[clamp(2rem,4vw,3.5rem)] font-bold text-white">
+            Frequently Asked Questions
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Everything you need to know about Accountin.
-          </p>
-        </motion.div>
+        </RevealOnScroll>
 
-        {/* FAQ Accordion */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-12 space-y-3"
-        >
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="rounded-xl border border-border bg-card overflow-hidden"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-4 flex items-center justify-between text-left"
-              >
-                <span className="font-medium text-foreground pr-4">{faq.question}</span>
-                <ChevronDown
-                  className={`h-5 w-5 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+        <div className="space-y-3">
+          {FAQS.map((faq, i) => {
+            const isOpen = open === i;
+            return (
+              <RevealOnScroll key={faq.q} delay={i * 0.04}>
+                <GlassCard className="overflow-hidden">
+                  <button
+                    className="w-full flex items-center justify-between px-5 py-4 text-left"
+                    onClick={() => setOpen(isOpen ? -1 : i)}
+                    aria-expanded={isOpen}
                   >
-                    <div className="px-6 pb-4 text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </motion.div>
+                    <span className="text-sm font-semibold text-white pr-4">{faq.q}</span>
+                    <motion.span
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="shrink-0 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center"
+                    >
+                      <ChevronDown size={14} className="text-[var(--accent-cyan)]" />
+                    </motion.span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-5 pb-4 text-sm text-[var(--text-muted)] leading-relaxed">{faq.a}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </GlassCard>
+              </RevealOnScroll>
+            );
+          })}
+        </div>
       </div>
     </section>
-  )
+  );
 }

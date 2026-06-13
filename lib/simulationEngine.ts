@@ -141,7 +141,7 @@ export function scoreFinalAccounts(question: any = {}, answers: Record<string, a
   }
 }
 
-export function scoreGSTInvoice(formData: Record<string, any>, scenario: Record<string, any>) {
+export function scoreGSTInvoice(scenario: Record<string, any>, formData: Record<string, any>) {
   const breakdown: Array<Record<string, any>> = []
   let score = 0
 
@@ -653,3 +653,6 @@ SCORING_FUNCTIONS["TDS_CHALLAN"] = scoreTDSChallan
 SCORING_FUNCTIONS["TDS_RETURN"] = scoreTDSReturn
 SCORING_FUNCTIONS["GST_RECONCILIATION"] = scoreGSTReconciliation
 SCORING_FUNCTIONS["GST_AUDIT"] = scoreGSTAudit
+SCORING_FUNCTIONS["GST_INVOICE"] = scoreGSTInvoice
+SCORING_FUNCTIONS["TDS_FORM16"] = scoreIncomeTax
+

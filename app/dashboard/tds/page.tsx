@@ -18,8 +18,8 @@ import {
   TrendingUp,
   Loader2,
   RefreshCw,
-  Trophy,
 } from "lucide-react"
+import { Trophy } from "lucide-react"
 
 interface TDSSimulation {
   id: string

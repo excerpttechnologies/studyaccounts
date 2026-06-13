@@ -2,6 +2,7 @@ export type Role = "Admin" | "Faculty" | "Student"
 
 export interface User {
   id: string
+  sub?: string
   name: string
   email: string
   passwordHash: string

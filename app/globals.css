@@ -4,6 +4,30 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Landing glassmorphic tokens */
+  --bg-base: #05060B;
+  --bg-elevated: #0B0D16;
+  --bg-glass: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glow-teal: #0E5E5A;
+  --glow-violet: #3B1E66;
+  --accent-cyan: #46C8E8;
+  --accent-blue: #5B8DEF;
+  --accent-violet: #A66BFF;
+  --accent-gradient: linear-gradient(100deg, #46C8E8 0%, #5B8DEF 45%, #A66BFF 100%);
+  --text-primary: #FFFFFF;
+  --text-muted: #9AA3B2;
+  --text-faint: rgba(255, 255, 255, 0.45);
+  --widget-bg: rgba(244, 242, 255, 0.92);
+  --widget-text: #14111F;
+
+  --brand-primary: #2563EB;
+  --brand-secondary: #7C3AED;
+  --brand-accent: #06B6D4;
+  --brand-success: #10B981;
+  --brand-warning: #F59E0B;
+  --brand-dark: #0F172A;
+  --brand-bg: #F8FAFC;
   --background: oklch(0.99 0.002 270);
   --foreground: oklch(0.15 0.02 270);
   --card: oklch(1 0 0);
@@ -75,7 +99,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
+  --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-poppins), 'Poppins', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -120,26 +145,54 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+    @apply bg-background text-foreground font-sans;
+    font-family: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
   }
 }
 
 /* ─── SmartAccounts animations ──────────────────────────────────────── */
 
 /* Marquee ticker */
-@keyframes ticker {
+@keyframes marquee {
   from { transform: translateX(0); }
-  to   { transform: translateX(-33.333%); }
+  to   { transform: translateX(-50%); }
 }
 
-.ticker-track {
-  animation: ticker 22s linear infinite;
-  width: max-content;
+.marquee-track {
+  animation: marquee 30s linear infinite;
 }
 
-.ticker-track:hover {
+.marquee-track:hover {
   animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Film grain texture */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  pointer-events: none;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.landing-section {
+  position: relative;
+  z-index: 1;
 }
 
 /* Neon button pulse on hover */
@@ -190,3 +243,96 @@ section[id] {
 html {
   scroll-behavior: smooth;
 }
+
+/* ─── Premium Light Hero Theme ───────────────────────────────────────────── */
+
+/* Scoped light-mode orange energy theme for the homepage */
+.hero-theme-orange {
+  /* Backgrounds */
+  --bg-base: #FAFBFC;               /* Clean off-white surface */
+  --bg-elevated: #F5F7FA;           /* Soft elevated layer */
+  --bg-glass: rgba(255, 255, 255, 0.70); /* White glass card */
+  --glass-border: rgba(255, 122, 0, 0.14); /* Delicate orange border */
+
+  /* Glow blobs (used by BackgroundGlow) */
+  --glow-teal: rgba(255, 122, 0, 0.08);
+  --glow-violet: rgba(255, 200, 87, 0.06);
+
+  /* Orange accent palette */
+  --accent-cyan: #FF7A00;            /* Primary orange */
+  --accent-blue: #FF9D2E;            /* Mid orange */
+  --accent-violet: #FFC857;          /* Warm gold */
+  --accent-gradient: linear-gradient(135deg, #FF7A00 0%, #FF9D2E 50%, #FFC857 100%);
+
+  /* Typography — dark navy on light for maximum readability */
+  --text-primary: #0F172A;           /* Deep navy */
+  --text-muted: #475569;             /* Slate-600 — readable on white */
+  --text-faint: rgba(15, 23, 42, 0.40);
+
+  /* Widget / floating card colours (dark-on-light) */
+  --widget-bg: rgba(255, 255, 255, 0.88);
+  --widget-text: #0F172A;
+}
+
+/* Glow utilities — refined for light backgrounds */
+.glow-orange-sm {
+  filter: drop-shadow(0 0 8px rgba(255, 122, 0, 0.28));
+}
+
+.glow-orange-md {
+  filter: drop-shadow(0 0 18px rgba(255, 122, 0, 0.38));
+}
+
+.glow-text-orange {
+  text-shadow: 0 0 20px rgba(255, 122, 0, 0.22);
+}
+
+/* Glass card overrides inside the light hero theme */
+.hero-theme-orange .glass-card {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(255, 122, 0, 0.12);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 4px 24px rgba(15, 23, 42, 0.06),
+    0 1px 3px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.hero-theme-orange .glass-card:hover {
+  border-color: rgba(255, 122, 0, 0.32) !important;
+  box-shadow:
+    0 8px 40px rgba(255, 122, 0, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1.0) !important;
+  transform: translateY(-2px);
+}
+
+/* Widget cards inside light hero — crisp white with warm shadow */
+.hero-theme-orange [class*="widget"] {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #0F172A !important;
+  box-shadow:
+    0 8px 32px rgba(15, 23, 42, 0.08),
+    0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Badge / pill badges on light bg */
+.hero-theme-orange [class*="pulse"] {
+  background-color: #FF7A00;
+}
+
+/* Section base background for the landing wrapper */
+.hero-theme-orange.relative {
+  background-color: #FAFBFC;
+}
+
+/* Ensure heading text is dark on light hero */
+.hero-theme-orange h1,
+.hero-theme-orange h2,
+.hero-theme-orange h3 {
+  color: var(--text-primary);
+}
+
+

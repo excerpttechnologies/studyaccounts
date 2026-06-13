@@ -11,7 +11,17 @@ const TaxSimulationSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["GST_REGISTRATION", "GST_INVOICE", "GST_RETURN", "TDS_DEDUCTION", "TDS_CHALLAN", "TDS_RETURN"],
+      enum: [
+        "GST_REGISTRATION",
+        "GST_INVOICE",
+        "GST_RETURN",
+        "GST_RECONCILIATION",
+        "GST_AUDIT",
+        "TDS_DEDUCTION",
+        "TDS_CHALLAN",
+        "TDS_RETURN",
+        "TDS_FORM16"
+      ],
     },
     userId: { type: String, required: true, index: true },
     simulationId: { type: String, required: true, index: true },

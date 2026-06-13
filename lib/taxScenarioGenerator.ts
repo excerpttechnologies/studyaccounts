@@ -305,6 +305,100 @@ export function generateTDSReturnScenario(userId: string) {
   }
 }
 
+// GST Reconciliation Scenario
+export function generateGSTReconciliationScenario(userId: string) {
+  const company = randomChoice(COMPANY_NAMES)
+  const booksSales = randomInt(500000, 2000000)
+  const mismatchPercent = randomChoice([0.05, 0.10, 0.15])
+  const mismatchValue = Math.round(booksSales * mismatchPercent)
+  const gstr1Sales = booksSales - mismatchValue
+
+  return {
+    scenarioId: randomUUID(),
+    userId,
+    type: "GST_RECONCILIATION",
+    company,
+    booksSales,
+    gstr1Sales,
+    mismatch: mismatchValue,
+    notes: "Please identify the mismatch and provide your reconciliation notes and action plan.",
+  }
+}
+
+// GST Audit Scenario
+export function generateGSTAuditScenario(userId: string) {
+  const company = randomChoice(COMPANY_NAMES)
+  return {
+    scenarioId: randomUUID(),
+    userId,
+    type: "GST_AUDIT",
+    company,
+    auditPoints: [
+      { id: "1", description: "ITC claimed on purchase of motor vehicle for staff transportation (5-seater)", amount: randomInt(80000, 150000), shouldFlag: true, reason: "Ineligible ITC under Section 17(5)(a) of CGST Act." },
+      { id: "2", description: "ITC claimed on raw material purchase with valid tax invoice and actual receipt", amount: randomInt(40000, 120000), shouldFlag: false, reason: "Eligible ITC." },
+      { id: "3", description: "ITC claimed on outdoor catering services for annual general meeting", amount: randomInt(15000, 30000), shouldFlag: true, reason: "Blocked credit under Section 17(5)(b)(i)." },
+      { id: "4", description: "ITC claimed on office computer systems used for business operations", amount: randomInt(60000, 100000), shouldFlag: false, reason: "Eligible ITC." },
+      { id: "5", description: "ITC claimed on membership fees for a local health and fitness club for executives", amount: randomInt(10000, 25000), shouldFlag: true, reason: "Blocked credit under Section 17(5)(b)(ii)." },
+    ],
+  }
+}
+
+// TDS Form 16 Scenario
+export function generateTDSForm16Scenario(userId: string) {
+  const employeeName = randomChoice(["Aarav Sharma", "Aditya Patel", "Rohan Verma", "Sneha Reddy", "Priya Nair"])
+  const employeePAN = generatePAN()
+  const employerTAN = generateTAN()
+  const basicSalary = randomInt(600000, 1200000)
+  const hra = Math.round(basicSalary * 0.40)
+  const da = Math.round(basicSalary * 0.10)
+  const rentPaid = Math.round(basicSalary * 0.35)
+  const section80C = randomChoice([80000, 120000, 150000])
+  const section80D = randomChoice([15000, 20000, 25000])
+
+  // Calculate HRA Exemption
+  const hraExempt = Math.min(hra, rentPaid - (0.1 * basicSalary), 0.4 * basicSalary)
+  const taxableHRA = hra - Math.max(0, hraExempt)
+  const grossSalary = basicSalary + taxableHRA + da
+  const standardDeduction = 50000
+  const netSalary = grossSalary - standardDeduction
+  const totalDeductions = Math.min(section80C, 150000) + Math.min(section80D, 25000)
+  const taxableIncome = netSalary - totalDeductions
+
+  let tax = 0
+  if (taxableIncome <= 300000) tax = 0
+  else if (taxableIncome <= 600000) tax = (taxableIncome - 300000) * 0.05
+  else if (taxableIncome <= 900000) tax = 15000 + (taxableIncome - 600000) * 0.10
+  else if (taxableIncome <= 1200000) tax = 45000 + (taxableIncome - 900000) * 0.15
+  else if (taxableIncome <= 1500000) tax = 90000 + (taxableIncome - 1200000) * 0.20
+  else tax = 150000 + (taxableIncome - 1500000) * 0.30
+
+  const cess = Math.round(tax * 0.04)
+  const totalTax = Math.round(tax + cess)
+
+  return {
+    scenarioId: randomUUID(),
+    userId,
+    type: "TDS_FORM16",
+    employeeName,
+    employeePAN,
+    employerTAN,
+    financialYear: "2025-26",
+    assessmentYear: "2026-27",
+    basicSalary,
+    hra,
+    da,
+    rentPaid,
+    section80C,
+    section80D,
+    grossSalary,
+    standardDeduction,
+    netSalary,
+    totalDeductions,
+    taxableIncome,
+    totalTax,
+  }
+}
+
 // Master Scenario Generator
 export function generateTaxScenario(type: string, userId: string) {
   switch (type) {
@@ -314,13 +408,20 @@ export function generateTaxScenario(type: string, userId: string) {
       return generateGSTInvoiceScenario(userId)
     case "GST_RETURN":
       return generateGSTReturnScenario(userId)
+    case "GST_RECONCILIATION":
+      return generateGSTReconciliationScenario(userId)
+    case "GST_AUDIT":
+      return generateGSTAuditScenario(userId)
     case "TDS_DEDUCTION":
       return generateTDSDeductionScenario(userId)
     case "TDS_CHALLAN":
       return generateTDSChallanScenario(userId)
     case "TDS_RETURN":
       return generateTDSReturnScenario(userId)
+    case "TDS_FORM16":
+      return generateTDSForm16Scenario(userId)
     default:
       throw new Error(`Unknown tax simulation type: ${type}`)
   }
 }
+
